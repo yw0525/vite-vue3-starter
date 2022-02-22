@@ -91,3 +91,43 @@ settings: {
 
 ### 集成 husky 和 lint-staged
 
+禁止提交未通过 ESLint 检测的代码。 
+
+#### husky
+
+```js
+npx husky-init && npm install
+```
+
+```js
+// .husky/pre-commit
+
+eslint --fix ./src --ext .vue,.js,.ts
+```
+
+#### lint-staged
+
+lint-staged 这个工具一般结合 husky 来使用，它可以让 husky 的 hook 触发的命令只作用于暂存区的文件，而不会影响到其他文件。
+
+```js
+yarn add lint-staged -D
+```
+
+```js
+// package.json
+
+"lint-staged": {
+  "*.{vue,js,ts}": "eslint --fix"
+}
+
+```
+
+只对 git 暂存区的 .vue、.js、.ts 文件执行 eslint --fix
+
+```js
+// .husky/pre-commit
+
+npx lint-staged
+```
+
+修改 pre-commit 命令
