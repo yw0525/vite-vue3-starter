@@ -5,7 +5,7 @@ import { BASE_URL } from '@/config';
 const axios = Axios.create({
   baseURL: BASE_URL,
   timeout: 20 * 1000
-})
+});
 
 axios.interceptors.request.use(
   (response) => {
@@ -14,11 +14,11 @@ axios.interceptors.request.use(
   (error) => {
     return Promise.reject(error);
   }
-)
+);
 
 axios.interceptors.response.use(
   (response) => {
-    return response
+    return response;
   },
   (error) => {
     if (error.response && error.response.data) {
@@ -31,6 +31,6 @@ axios.interceptors.response.use(
     }
     return Promise.reject(error);
   }
-)
+);
 
 export default axios;
