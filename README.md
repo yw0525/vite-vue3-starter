@@ -1,5 +1,37 @@
 ## Vite Vue Starter
 
+### Vite
+
+```js
+yarn create @vitejs/app
+```
+
+### vue-router、vuex
+
+```js
+yarn add vue-router@next vuex@next
+```
+
+### Element Plus
+
+```js
+yarn add element-plus
+```
+
+### Axios
+
+```js
+yarn add axios
+```
+
+### Less
+
+Vite 内部已帮我们集成相关的 loader，不需要额外配置。你也可以使用 Sass、Less、Stylus。 
+
+```js
+yarn add less
+```
+
 ### VSCode 插件
 
 * EditorConfig：EitorConfig for VS Code
@@ -56,3 +88,6 @@ settings: {
   }
 }
 ```
+
+### 集成 husky 和 lint-staged
+
