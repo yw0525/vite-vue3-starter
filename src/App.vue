@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <h1>Vite Vue Starter</h1>
+  <router-view />
 </template>
 
 <style>
