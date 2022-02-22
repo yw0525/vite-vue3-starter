@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
-import axios from '@/shared/axios';
+import axios from '@/shared/axios.ts';
 
 export default defineComponent({
   setup() {

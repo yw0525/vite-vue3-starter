@@ -1,6 +1,6 @@
 import Axios from 'axios';
 import { ElMessage } from 'element-plus';
-import { BASE_URL } from '@/config';
+import { BASE_URL } from '@/config/index.ts';
 
 const axios = Axios.create({
   baseURL: BASE_URL,

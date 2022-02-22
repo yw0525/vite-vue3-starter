@@ -28,3 +28,31 @@ vscode 自动设置保存文件执行 eslint --fix
 * eslint-config-prettier：关闭 ESLint 中与 Prettier 中会发生冲突的规则
 
 校验优先级：Prettier 配置规则 > ESLint 配置规则
+
+```js
+module.exports = {
+  ...
+  extends: [
+    'plugin:vue/essential',
+    'airbnb-base',
+    'plugin:prettier/recommended' // 添加 prettier 插件
+  ]
+}
+```
+
+### ESLint 解析 alias
+
+```js
+yarn add eslint-import-resolver-alias -D
+```
+
+```js
+settings: {
+  'import/resolver': {
+    alias: {
+      map: [['@', './src']],
+      extensions: ['.js', '.vue']
+    }
+  }
+}
+```

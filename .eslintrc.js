@@ -11,7 +11,16 @@ module.exports = {
   },
   plugins: ['vue', '@typescript-eslint'],
   rules: {
-    'import/no-extraneous-dependencies': ['error', { devDependencies: true }]
+    'vue/multi-word-component-names': 'off',
+    'no-plusplus': 'off',
+    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+    'no-param-reassign': [
+      'error',
+      {
+        props: true,
+        ignorePropertyModificationsFor: ['state']
+      }
+    ]
   },
   settings: {
     'import/resolver': {
