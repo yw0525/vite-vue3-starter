@@ -279,8 +279,10 @@ npx commitizen init cz-conventional-changelog --save-dev --save-exact
 ```
 
 ```js
-git cz // 使用 git 命令 
+git cz // 使用 git 命令
 ```
+
+> windows 可以配置 script 脚本或者全局安装 commitizen。
 
 ### 自定义提交说明
 
