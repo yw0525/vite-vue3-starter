@@ -248,6 +248,8 @@ body 是对本次 commit 的详细描述，可以分成多行（body 可省略�
 
 如果当前提交是针对特定的 issue，那么可以在 Footer 部分填写需要关闭的单个 issue 或一系列 issues。
 
+
+
 ### 参考案例
 
 #### feat
@@ -288,7 +290,7 @@ style(location): add couple of missing semi colons
 chore(release): v3.4.2
 ```
 
-## 规范提交 Commitizen 
+## 规范提交代码
 
 Commitizen 是一个帮助撰写规范 commit message 的工具。它有一个命令行工具 cz-cli
 
@@ -302,12 +304,170 @@ yarn add commitizen -D
 npx commitizen init cz-conventional-changelog --save-dev --save-exact
 ```
 
+这行命令做了两件事
+
+* 安装 cz-conventional-changelog 到开发依赖（devDependencies）
+
+* 在 `package.json` 中增加了 `config.commitizen`
+
+  ```js
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+  ```
+
+  
+
 ```js
 git cz // 使用 git 命令
 ```
 
 > windows 可以配置 script 脚本或者全局安装 commitizen。
 
-### 自定义提交说明
+### 自定义提交说明（可选）
 
 `git cz`  终端操作提示都是英文的，如果想改成中文的或者自定义这些配置选项，可以使用 **cz-customizable** 适配器。
+
+**cz-customizable 初始化项目**
+
+```bash
+npx commitizen init cz-customizable --save-dev --save-exact --force
+```
+
+这个命令做了两件事
+
+* 安装 cz-customizable 到开发依赖（devDependencies）
+
+  ```js
+  "devDependencies": {
+    "cz-customizable": "^6.3.0",
+  }
+  ```
+
+* 修改 `package.json` 中的 `config.commitizen` 字段
+
+  ```js
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-customizable"
+    }
+  }
+  ```
+
+**使用 cz-customizable**
+
+项目根目录下创建 `.cz-config.js` 文件。
+
+```js
+module.exports = {
+  // type 类型（定义之后，可通过上下键选择）
+  types: [
+    { value: 'feat', name: 'feat:     新增功能' },
+    { value: 'fix', name: 'fix:      修复 bug' },
+    { value: 'docs', name: 'docs:     文档变更' },
+    { value: 'style', name: 'style:    代码格式（不影响功能，例如空格、分号等格式修正）' },
+    { value: 'refactor', name: 'refactor: 代码重构（不包括 bug 修复、功能新增）' },
+    { value: 'perf', name: 'perf:     性能优化' },
+    { value: 'test', name: 'test:     添加、修改测试用例' },
+    { value: 'build', name: 'build:    构建流程、外部依赖变更（如升级 npm 包、修改 webpack 配置等）' },
+    { value: 'ci', name: 'ci:       修改 CI 配置、脚本' },
+    { value: 'chore', name: 'chore:    对构建过程或辅助工具和库的更改（不影响源文件、测试用例）' },
+    { value: 'revert', name: 'revert:   回滚 commit' }
+  ],
+
+  // scope 类型（定义之后，可通过上下键选择）
+  scopes: [
+    ['components', '组件相关'],
+    ['hooks', 'hook 相关'],
+    ['utils', 'utils 相关'],
+    ['element-ui', '对 element-ui 的调整'],
+    ['styles', '样式相关'],
+    ['deps', '项目依赖'],
+    ['auth', '对 auth 修改'],
+    ['other', '其他修改'],
+    // 如果选择 custom，后面会让你再输入一个自定义的 scope。也可以不设置此项，把后面的 allowCustomScopes 设置为 true
+    ['custom', '以上都不是？我要自定义']
+  ].map(([value, description]) => {
+    return {
+      value,
+      name: `${value.padEnd(30)} (${description})`
+    }
+  }),
+
+  // 是否允许自定义填写 scope，在 scope 选择的时候，会有 empty 和 custom 可以选择。
+  // allowCustomScopes: true,
+
+  // allowTicketNumber: false,
+  // isTicketNumberRequired: false,
+  // ticketNumberPrefix: 'TICKET-',
+  // ticketNumberRegExp: '\\d{1,5}',
+
+
+  // 针对每一个 type 去定义对应的 scopes，例如 fix
+  /*
+  scopeOverrides: {
+    fix: [
+      { name: 'merge' },
+      { name: 'style' },
+      { name: 'e2eTest' },
+      { name: 'unitTest' }
+    ]
+  },
+  */
+
+  // 交互提示信息
+  messages: {
+    type: '确保本次提交遵循 Angular 规范！\n选择你要提交的类型：',
+    scope: '\n选择一个 scope（可选）：',
+    // 选择 scope: custom 时会出下面的提示
+    customScope: '请输入自定义的 scope：',
+    subject: '填写简短精炼的变更描述：\n',
+    body:
+      '填写更加详细的变更描述（可选）。使用 "|" 换行：\n',
+    breaking: '列举非兼容性重大的变更（可选）：\n',
+    footer: '列举出所有变更的 ISSUES CLOSED（可选）。 例如: #31, #34：\n',
+    confirmCommit: '确认提交？'
+  },
+
+  // 设置只有 type 选择了 feat 或 fix，才询问 breaking message
+  allowBreakingChanges: ['feat', 'fix'],
+
+  // 跳过要询问的步骤
+  // skipQuestions: ['body', 'footer'],
+
+  // subject 限制长度
+  subjectLimit: 100
+  breaklineChar: '|', // 支持 body 和 footer
+  // footerPrefix : 'ISSUES CLOSED:'
+  // askForBreakingChangeFirst : true,
+}
+```
+
+很多时候我们不需要写长描述，公司内部的代码仓库也不需要管理 issue，那么可以把询问 body 和 footer 的步骤跳过（在 `.cz-config.js` 中修改成 `skipQuestions: ['body', 'footer']`。
+
+### Commitlint 验证提交规范
+
+**只让符合 Angular 规范的 commit message 通过**，我们借助 @commitlint/config-conventional 和 @commitlint/cli 来实现。
+
+```js
+yarn add @commitlint/config-conventional @commitlint/cli -D
+```
+
+```js
+// commitlint.config.js
+
+module.exports = { extends: ['@commitlint/config-conventional'] }
+```
+
+使用 husky 的  `commit-msg`  hook 触发验证提交信息的命令
+
+```js
+npx husky add .husky/commit-msg "npx --no-install commitlint --edit $1"
+```
+
+测试代码提交时就会触发 commit-msg 钩子，校验提交信息。
+
+## 单元测试
+
