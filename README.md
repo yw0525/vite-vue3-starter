@@ -868,6 +868,8 @@ GitHub Actions 只对 GitHub 仓库有效，所以我们创建 GitHub 仓库来�
 
 新创建的 secret `test_deploy` 在 Actions 配置文件中要用到，两个地方需保持一致！
 
+> name 名称如果写小写，会自动转为大写。
+
 ### 创建 Actions 配置文件
 
 1. 在项目根目录下创建 `.github` 目录。
@@ -917,3 +919,10 @@ jobs:
 例如：**安装依赖**、**项目打包**等，然后将打包好的静态文件部署到 GitHub Pages 上，最后，我们就能通过域名访问了。
 
 自动部署只是 GitHub Actions 功能的冰山一角，GitHub Actions 能做的事还有很多，大家感兴趣的话自行查阅。
+
+
+
+预览地址：https://yw0525.github.io/vite-vue3-starter/#/。
+
+构建失败会发邮件通知，也可以查看项目  Actions 模板查看构建进度。
+

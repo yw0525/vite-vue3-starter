@@ -1,21 +1,27 @@
 <template>
-  <h1>Vite Vue3 Starter</h1>
+  <h1 class="title">Vite Vue3 Starter</h1>
+  <h2 @click="handleBtnClick">heora</h2>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import axios from '@/shared/axios.ts';
 
 export default defineComponent({
   setup() {
-    axios
-      .get('/users/XPoet')
-      .then((res: any) => {
-        console.log(res);
-      })
-      .catch((err: any) => {
-        console.log(err);
-      });
+    const handleBtnClick = () => {
+      window.location.href = 'https://www.yueluo.club';
+    };
+
+    return {
+      handleBtnClick
+    };
   }
 });
 </script>
+
+<style lang="less" scoped>
+h2 {
+  cursor: pointer;
+  color: #409eff;
+}
+</style>
