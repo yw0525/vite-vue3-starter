@@ -731,7 +731,7 @@ yarn add jest@^26.6.3 ts-jest@^26.5.6
 ### 单元测试约束
 
 我们使用 husky 在 Git 的 `pre-commit` 和 `commit-msg` 阶段分别约束代码风格规范和提交信息规范。
-我们在  `pre-push` 阶段进行单元测试，只有单元测试全部通过才让代码 `push` 到远端仓库，否则终止 `push`。
+我们可以在  `pre-push` 阶段进行单元测试，只有单元测试全部通过才让代码 `push` 到远端仓库，否则终止 `push`。
 
 ```js
 npx husky add .husky/pre-push "npm run test $1"
@@ -746,3 +746,10 @@ npx husky add .husky/pre-push "npm run test $1"
 npm run test 
 ```
 
+## 自动部署（可选）
+
+常见的 CI 工具有 GitHub Actions、GitLab CI、Travis CI、Circle CI 等，这里使用 Github Actions。
+
+GitHub Actions 是 GitHub 的持续集成服务，持续集成由很多操作组成，比如抓取代码、运行测试、登录远程服务器、发布到第三方服务等等，GitHub 把这些操作称为 actions。
+
+### 部署 Github

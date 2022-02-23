@@ -1,3 +1,7 @@
+<template>
+  <h1>Vite Vue3 Starter</h1>
+</template>
+
 <script lang="ts">
 import { defineComponent } from 'vue';
 import axios from '@/shared/axios.ts';
