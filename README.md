@@ -1,5 +1,33 @@
 # Vue 3.x 项目工程环境搭建
 
+## 技术栈
+
+编程语言：[TypeScript 4.x](https://link.juejin.cn?target=https%3A%2F%2Fwww.typescriptlang.org%2Fzh%2F) + [JavaScript](https://link.juejin.cn?target=https%3A%2F%2Fwww.javascript.com%2F)
+
+构建工具：[Vite 2.x](https://link.juejin.cn?target=https%3A%2F%2Fcn.vitejs.dev%2F)
+
+前端框架：[Vue 3.x](https://link.juejin.cn?target=https%3A%2F%2Fv3.cn.vuejs.org%2F)
+
+路由工具：[Vue Router 4.x](https://link.juejin.cn?target=https%3A%2F%2Fnext.router.vuejs.org%2Fzh%2Findex.html)
+
+状态管理：[Vuex 4.x](https://link.juejin.cn?target=https%3A%2F%2Fnext.vuex.vuejs.org%2F)
+
+UI 框架：[Element Plus](https://link.juejin.cn?target=https%3A%2F%2Felement-plus.org%2F%23%2Fzh-CN)
+
+CSS 预编译：[Stylus](https://link.juejin.cn?target=https%3A%2F%2Fstylus-lang.com%2F) / [Sass](https://link.juejin.cn?target=https%3A%2F%2Fsass.bootcss.com%2Fdocumentation) / [Less](https://link.juejin.cn?target=http%3A%2F%2Flesscss.cn%2F)
+
+HTTP 工具：[Axios](https://link.juejin.cn?target=https%3A%2F%2Faxios-http.com%2F)
+
+Git Hook 工具：[husky](https://link.juejin.cn?target=https%3A%2F%2Ftypicode.github.io%2Fhusky%2F%23%2F) + [lint-staged](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fokonet%2Flint-staged)
+
+代码规范：[EditorConfig](https://link.juejin.cn?target=http%3A%2F%2Feditorconfig.org) + [Prettier](https://link.juejin.cn?target=https%3A%2F%2Fprettier.io%2F) + [ESLint](https://link.juejin.cn?target=https%3A%2F%2Feslint.org%2F) + [Airbnb JavaScript Style Guide](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fairbnb%2Fjavascript%23translation)
+
+提交规范：[Commitizen](https://link.juejin.cn?target=http%3A%2F%2Fcommitizen.github.io%2Fcz-cli%2F) + [Commitlint](https://link.juejin.cn?target=https%3A%2F%2Fcommitlint.js.org%2F%23%2F)
+
+单元测试：[vue-test-utils](https://link.juejin.cn?target=https%3A%2F%2Fnext.vue-test-utils.vuejs.org%2F) + [jest](https://link.juejin.cn?target=https%3A%2F%2Fjestjs.io%2F) + [vue-jest](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fvuejs%2Fvue-jest) + [ts-jest](https://link.juejin.cn?target=https%3A%2F%2Fkulshekhar.github.io%2Fts-jest%2F)
+
+自动部署：[GitHub Actions](https://link.juejin.cn?target=https%3A%2F%2Fdocs.github.com%2Fcn%2Factions%2Flearn-github-actions)
+
 ## 架构搭建
 
 ### Vite
@@ -752,4 +780,85 @@ npm run test
 
 GitHub Actions 是 GitHub 的持续集成服务，持续集成由很多操作组成，比如抓取代码、运行测试、登录远程服务器、发布到第三方服务等等，GitHub 把这些操作称为 actions。
 
-### 部署 Github
+### 部署 Github 仓库
+
+GitHub Actions 只对 GitHub 仓库有效，所以我们创建 GitHub 仓库来托管项目代码。
+
+- `master` 分支存储项目源代码
+- `gh-pages` 分支存储打包后的静态文件
+
+`gh-pages` 分支，是 GitHub Pages 服务的固定分支，可以通过 HTTP 的方式访问到这个分支的静态文件资源。
+
+### 创建 Github Token
+
+创建一个有 **repo** 和 **workflow** 权限的 [GitHub Token](https://link.juejin.cn/?target=https%3A%2F%2Fgithub.com%2Fsettings%2Ftokens%2Fnew)。
+
+步骤：personal info - Settings - Developer settings - Personal access tokens。
+
+
+<img src="./src/assets/github_token.png" style="zoom: 60%" />
+
+
+
+**生成的 token 只会显示一次，需要自主保存，如果遗失，可以重新生成**
+
+### 仓库中添加 secret
+
+步骤：settings - Secrets - Actions secrets - New repository secret
+
+
+<img src="./src/assets/github_action_secret.png" style="zoom: 70%" />
+
+
+
+新创建的 secret `test_deploy` 在 Actions 配置文件中要用到，两个地方需保持一致！
+
+### 创建 Actions 配置文件
+
+1. 在项目根目录下创建 `.github` 目录。
+2. 在 `.github` 目录下创建 `workflows` 目录。
+3. 在 `workflows` 目录下创建 `deploy.yml` 文件。
+
+
+
+```yaml
+name: deploy
+
+on:
+  push:
+    branches: [master] # master 分支有 push 时触发
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js v14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+
+      - name: Install
+        run: npm install # 安装依赖
+
+      - name: Build
+        run: npm run build # 打包
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3 # 使用部署到 GitHub pages 的 action
+        with:
+          publish_dir: ./dist # 部署打包后的 dist 目录
+          github_token: ${{ secrets.TEST_DEPLOY }} # secret 名  ★★★
+          user_name: ${{ secrets.MY_USER_NAME }}
+          user_email: ${{ secrets.MY_USER_EMAIL }}
+          commit_message: Update Vite2.x + Vue3.x + TypeScript Starter # 部署时的 git 提交信息，自由填写
+
+```
+
+### 自动触发原理
+
+当有新提交的代码 `push` 到 GitHub 仓库时，就会触发 GitHub Actions，在 GitHub 服务器上执行 Action 配置文件里面的命令。
+例如：**安装依赖**、**项目打包**等，然后将打包好的静态文件部署到 GitHub Pages 上，最后，我们就能通过域名访问了。
+
+自动部署只是 GitHub Actions 功能的冰山一角，GitHub Actions 能做的事还有很多，大家感兴趣的话自行查阅。
