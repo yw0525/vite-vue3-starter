@@ -1,8 +1,6 @@
-# Vite Vue Starter
+# Vue 3.x 项目工程环境搭建
 
-Vue 3.x 项目工程环境搭建。
-
-## 基础配置
+## 架构搭建
 
 ### Vite
 
@@ -40,7 +38,75 @@ yarn add less
 
 ## 代码风格
 
+### EditorConfig
+
+```bash
+# .editorconfig
+
+# Editor configuration, see http://editorconfig.org
+
+# 表示是最顶层的 EditorConfig 配置文件
+root = true
+
+[*] # 表示所有文件适用
+charset = utf-8 # 设置文件字符集为 utf-8
+indent_style = space # 缩进风格（tab | space）
+indent_size = 2 # 缩进大小
+end_of_line = lf # 控制换行类型(lf | cr | crlf)
+trim_trailing_whitespace = true # 去除行首的任意空白字符
+insert_final_newline = true # 始终在文件末尾插入一个新行
+
+[*.md] # 表示仅 md 文件适用以下规则
+max_line_length = off
+trim_trailing_whitespace = false
+```
+
+
+
+VSCode 推荐安装 EitorConfig for VS Code 插件。
+
+### Prettier
+
+```js
+yarn add prettier -D
+```
+
+```js
+// .prettierrc
+
+{
+  "useTabs": false,
+  "tabWidth": 2,
+  "printWidth": 100,
+  "singleQuote": true,
+  "trailingComma": "none",
+  "bracketSpacing": true,
+  "semi": true
+}
+```
+
+官网配置：[Prettier-Options](https://link.juejin.cn/?target=https%3A%2F%2Fprettier.io%2Fdocs%2Fen%2Foptions.html)
+
+
+
+```bash
+# 格式化所有文件（. 表示所有文件）
+npx prettier --write .
+```
+
+
+
+VSCode 推荐安装 Prettier - Code formatter 插件。
+
 ### ESLint
+
+ESLint 三种规范：
+
+* [airbnb](https://github.com/airbnb/javascript)
+* [standard](https://github.com/standard/standard)
+* [google](https://github.com/google/eslint-config-google)
+
+
 
 ```js
 yarn add eslint -D
@@ -50,11 +116,35 @@ yarn add eslint -D
  npx eslint --init
  ```
 
+```js
+// .eslintrc.js
 
-
-* [airbnb](https://github.com/airbnb/javascript)
-* [standard](https://github.com/standard/standard)
-* [google](https://github.com/google/eslint-config-google)
+module.exports = {
+  env: {
+    browser: true,
+    es2021: true
+  },
+  extends: ['plugin:vue/essential', 'airbnb-base'],
+  parserOptions: {
+    ecmaVersion: 'latest',
+    parser: '@typescript-eslint/parser',
+    sourceType: 'module'
+  },
+  plugins: ['vue', '@typescript-eslint'],
+  rules: {
+    'vue/multi-word-component-names': 'off',
+    'no-plusplus': 'off',
+    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+    'no-param-reassign': [
+      'error',
+      {
+        props: true,
+        ignorePropertyModificationsFor: ['state']
+      }
+    ]
+  }
+};
+```
 
 
 
@@ -68,11 +158,9 @@ vscode 自动设置保存文件执行 eslint --fix
 }
 ```
 
-### VSCode 插件推荐
 
-* EditorConfig：EitorConfig for VS Code
-* Prettier：Prettier - Code formatter
-* ESLint：ESLint
+
+VSCode 推荐安装 ESLint 插件。
 
 ### ESLint 与 Prettier 冲突
 
@@ -116,14 +204,26 @@ settings: {
 #### husky
 
 ```js
-npx husky-init && npm install
+npx husky-init && npm install // 快速初始化 husky 配置
 ```
+
+这行命令做了以下操作：
+
+* 安装 husky 到开发依赖
+* 在项目根目录下创建 `.husky` 目录，并创建 `pre-commit` hook，初始化 `pre-commit` 命令为 `npm test`
+* 修改 `package.json` 的 `scripts`，增加 `"prepare": "husky install"`
+
+
+
+修改 pre-commit 钩子。
 
 ```js
 // .husky/pre-commit
 
 eslint --fix ./src --ext .vue,.js,.ts
 ```
+
+当我们执行 `git commit -m "xxx"` 时，会先对 `src` 目录下所有的 `.vue`、`.js`、`.ts ` 文件执行  `eslint --fix` 命令，如果 ESLint 通过，成功 `commit`，否则终止 `commit`。有时候我们明明只改动了一两个文件，却要对所有的文件执行 `eslint --fix`。我们要做到只用 ESLint 修复自己此次写的代码，而不去影响其他的代码。所我们还需借助 **lint-staged** 。
 
 #### lint-staged
 
@@ -154,7 +254,7 @@ npx lint-staged
 
 ## 提交规范
 
-### 简单介绍
+### 规范介绍
 
 使用社区最流行、最知名、最受认可的 Angular 团队提交规范。
 
@@ -176,7 +276,7 @@ commit message  格式规范
 
 
 
-**规范提交信息：**
+**规范提交信息的好处：**
 
 首行就是简洁实用的关键信息，方便在 git history 中快速浏览；
 
@@ -470,4 +570,179 @@ npx husky add .husky/commit-msg "npx --no-install commitlint --edit $1"
 测试代码提交时就会触发 commit-msg 钩子，校验提交信息。
 
 ## 单元测试
+
+### 安装配置
+
+单元测试是项目开发中一个非常重要的环节，完整的测试能为代码和业务提供质量保证，减少 Bug 的出现。
+
+```js
+yarn add @vue/test-utils@next jest vue-jest@next ts-jest -D // vue 组件单元测试
+```
+
+
+
+```js
+// jest.config.js
+
+module.exports = {
+  moduleFileExtensions: ['vue', 'js', 'ts'],
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
+  transform: {
+    '^.+\\.vue$': 'vue-jest', // vue 文件用 vue-jest 转换
+    '^.+\\.ts$': 'ts-jest' // ts 文件用 ts-jest 转换
+  },
+  // 匹配 __tests__ 目录下的 .js/.ts 文件 或其他目录下的 xx.test.js/ts xx.spec.js/ts
+  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(ts)$'
+}
+```
+
+### 创建单元配置文件
+
+我们配置只匹配 `__tests__` 目录下的任意 `.ts` 文件或其他目录下的 `xx.test.ts`/`xx.spec.ts` 文件进行单元测试。
+
+```js
+├── compoents/
+├── src/
+└── tests/                           // 单元测试目录
+    ├── Test.spec.ts                 // Test 组件测试
+```
+
+
+
+**src/components/Test/index.vue**
+
+```vue
+<template>
+  <div class="test-container page-container">
+    <div class="page-title">Unit Test Page</div>
+    <p>count is: {{ count }}</p>
+    <button @click="increment">increment</button>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
+
+export default defineComponent({
+  name: 'Vuex',
+  setup() {
+    const count = ref<number>(0);
+    const increment = () => {
+      count.value += 1;
+    };
+    return { count, increment };
+  }
+});
+</script>
+```
+
+tests/Test.spec.ts
+
+```js
+import { mount } from '@vue/test-utils'
+import Test from '../src/views/Test.vue'
+
+test('Test.vue', async () => {
+  const wrapper = mount(Test)
+  expect(wrapper.html()).toContain('Unit Test Page')
+  expect(wrapper.html()).toContain('count is: 0')
+  await wrapper.find('button').trigger('click')
+  expect(wrapper.html()).toContain('count is: 1')
+});
+```
+
+### 无法解析 test 问题解决
+
+IDE 会提示某些方法不存在（如 `test`、`describe`、`it`、`expect`等），安装 @types/jest 即可解决。
+
+```js
+yarn add @types/jest -D 
+```
+
+TypeScript 的编译器也会提示 jest 的方法和类型找不到，我们还需把 @types/jest 添加根目录下的 `ts.config.json`（TypeScript 配置文件）中：
+
+```js
+{
+  "compilerOptions": {
+    "types": ["vite/client", "jest"]
+  }
+}
+```
+
+
+
+在 ESLint 中增加 **eslint-plugin-jest** 插件来解除对 jest 的校验。
+
+```js
+yarn add eslint-plugin-jest -D
+```
+
+```js
+// .eslintrc.js
+
+module.exports = {
+  extends: [
+    'plugin:jest/recommended'
+  ],
+}
+```
+
+### 执行单元测试
+
+编写 scripts 脚本，package.json 配置文件。
+
+```js
+"scripts": {
+  "dev": "vite",
+  "build": "vue-tsc --noEmit && vite build",
+  "preview": "vite preview",
+  "prepare": "husky install",
+  "cz": "git cz",
+  "test": "jest"
+}
+```
+
+你可以在 `jest.config.js` 配置文件中，自由配置单元测试文件的目录。
+
+
+
+可能会出现以下错误：
+
+```js
+ Cannot destructure property 'config' of 'undefined' as it is undefined.
+```
+
+需要 jest 和 ts-jest 版本降级。
+
+```js
+"jest": "^26.6.3",
+"ts-jest": "^26.5.6"
+```
+
+```js
+yarn remove jest ts-jest
+```
+
+```js
+yarn add jest@^26.6.3 ts-jest@^26.5.6
+```
+
+### 单元测试约束
+
+我们使用 husky 在 Git 的 `pre-commit` 和 `commit-msg` 阶段分别约束代码风格规范和提交信息规范。
+我们在  `pre-push` 阶段进行单元测试，只有单元测试全部通过才让代码 `push` 到远端仓库，否则终止 `push`。
+
+```js
+npx husky add .husky/pre-push "npm run test $1"
+```
+
+该命令会在 `.husky` 文件下创建 `pre-push` 命令
+
+```js
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+npm run test 
+```
 
